@@ -1,0 +1,15 @@
+Metadata-Version: 2.4
+Name: unitree_rl_lab
+Version: 0.2.1
+Summary: Reinforcement Learning Lab for Unitree Robots.
+Home-page: https://github.com/unitreerobotics/unitree_rl_lab
+Author: Unitree Robotics
+Maintainer: Unitree Robotics
+License: Apache 2.0
+Classifier: Programming Language :: Python :: 3
+Classifier: License :: OSI Approved :: Apache Software License
+Classifier: Operating System :: POSIX :: Linux
+Requires-Python: >=3.10
+Requires-Dist: argcomplete
+Dynamic: home-page
+Dynamic: requires-python

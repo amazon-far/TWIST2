@@ -1,0 +1,25 @@
+[build-system]
+requires = ["setuptools", "wheel", "toml"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "unitree_rl_lab"
+version = "0.2.1"
+description = "Reinforcement Learning Lab for Unitree Robots."
+dependencies = [
+    "argcomplete",
+]
+requires-python = ">=3.10"
+license = { text = "Apache 2.0" }
+authors = [
+    { name = "Unitree Robotics" }
+]
+maintainers = [
+    { name = "Unitree Robotics" }
+]
+classifiers = [
+    "Programming Language :: Python :: 3",
+    "License :: OSI Approved :: Apache Software License",
+    "Operating System :: POSIX :: Linux"
+]
+dynamic = []

@@ -404,7 +404,10 @@ class XRobotTeleopToRobot:
     def setup_teleop_data_streamer(self):
         """Initialize and start the teleop data streamer"""
         self.teleop_data_streamer = XRobotStreamer()
-        print("Teleop data streamer initialized")
+        if self.teleop_data_streamer is not None:
+            print("Teleop data streamer initialized")
+        else:
+            print("Failed to initialize teleop data streamer")
         
     def setup_redis_connection(self):
         """Setup Redis connection"""

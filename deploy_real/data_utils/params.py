@@ -60,8 +60,23 @@ DEFAULT_MIMIC_OBS_TODDY = np.concatenate([
                     ])
                 ])
 
+DEFAULT_MIMIC_OBS_G1_23DOF = np.concatenate([
+                    np.array([0, 0]), # xy velocity
+                    np.array([0.793]), # z position (from 23dof xml pelvis pos)
+                    np.array([0, 0]), # roll/pitch
+                    np.array([0]), # yaw angular velocity
+                    # 23 dof: 6 L-leg + 6 R-leg + 1 waist_yaw + 5 L-arm + 5 R-arm
+                    np.array([-0.2, 0.0, 0.0, 0.4, -0.2, 0.0,  # left leg (6)
+                            -0.2, 0.0, 0.0, 0.4, -0.2, 0.0,  # right leg (6)
+                            0.0, # waist_yaw (1)
+                            0.0, 0.4, 0.0, 1.2, 0.0,  # left arm (5): sh_pitch, sh_roll, sh_yaw, elbow, wrist_roll
+                            0.0, -0.4, 0.0, 1.2, 0.0, # right arm (5)
+                        ])
+                ])
+
 DEFAULT_MIMIC_OBS = {
     "unitree_g1": DEFAULT_MIMIC_OBS_G1,
+    "unitree_g1_23dof": DEFAULT_MIMIC_OBS_G1_23DOF,
     "unitree_g1_mixed_mode": DEFAULT_MIMIC_OBS_G1_MIXED_MODE,
     "unitree_g1_with_hands": DEFAULT_MIMIC_OBS_G1,
     "booster_t1": DEFAULT_MIMIC_OBS_T1,

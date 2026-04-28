@@ -1,0 +1,10 @@
+Metadata-Version: 2.4
+Name: g1_23dof_mimic
+Version: 0.1.0
+Summary: G1 23-DoF Motion Imitation for Isaac Lab (Isaac Sim 5.1.0)
+Requires-Python: >=3.10
+Requires-Dist: wandb
+Requires-Dist: termcolor
+Dynamic: requires-dist
+Dynamic: requires-python
+Dynamic: summary

@@ -1,0 +1,32 @@
+root_path: /home/wego/TWIST2/assets/example_motions
+motions:
+- file: 0807_yanjie_walk_001.pkl
+  weight: 1.0
+  description: walk
+- file: 0807_yanjie_walk_002.pkl
+  weight: 1.0
+  description: walk
+- file: 0807_yanjie_walk_003.pkl
+  weight: 1.0
+  description: walk
+- file: 0807_yanjie_walk_004.pkl
+  weight: 1.0
+  description: walk
+- file: 0807_yanjie_walk_005.pkl
+  weight: 1.0
+  description: walk
+- file: 0807_yanjie_walk_006.pkl
+  weight: 1.0
+  description: walk
+- file: 0807_yanjie_walk_007.pkl
+  weight: 1.0
+  description: walk
+- file: 0807_yanjie_walk_008.pkl
+  weight: 1.0
+  description: walk
+- file: 0807_yanjie_walk_009.pkl
+  weight: 1.0
+  description: walk
+- file: 0807_yanjie_walk_010.pkl
+  weight: 1.0
+  description: walk

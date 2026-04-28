@@ -98,7 +98,7 @@ class RealTimePolicyController(object):
                  policy_path,
                  config_path,
                  device='cuda',
-                 net='eno1',
+                 net='enp4s0',
                  use_hand=False,
                  record_proprio=False,
                  smooth_body=0.0):
@@ -196,7 +196,6 @@ class RealTimePolicyController(object):
                     break
                 
                 dof_pos, dof_vel, quat, ang_vel, dof_temp, dof_tau, dof_vol = self.env.get_robot_state()
-                
                 rpy = quatToEuler(quat)
 
                 obs_dof_vel = dof_vel.copy()
@@ -271,7 +270,7 @@ class RealTimePolicyController(object):
                 raw_action = np.clip(raw_action, -10.0, 10.0)
                 target_dof_pos = self.default_dof_pos + raw_action * self.action_scale
 
-                # self.redis_client.set("action_low_level_unitree_g1", json.dumps(raw_action.tolist()))
+                self.redis_client.set("action_low_level_unitree_g1", json.dumps(raw_action.tolist()))
 
                 kp_scale = 1.0
                 kd_scale = 1.0

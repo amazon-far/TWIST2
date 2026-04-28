@@ -1,0 +1,13 @@
+# Multi-clip manifest consumed by MultiMotionCommandCfg.motion_files.
+#
+# Paths are resolved relative to this yaml's directory, so you can drop npz
+# files alongside this manifest or point into sibling folders with ``../``.
+#
+# Usage (in tracking_env_cfg.py):
+#     MOTION_FILES = f"{os.path.dirname(__file__)}/motion_set.yaml"
+#
+# Extend this list to recreate TWIST2 teacher's multi-clip distribution
+# (g1_omomo+mocap_static+amass_walk.yaml had hundreds of entries).
+
+motions:
+  - ../dance_102/G1_Take_102.bvh_60hz.npz

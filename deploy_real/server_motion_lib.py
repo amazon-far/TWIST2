@@ -54,6 +54,13 @@ def build_mimic_obs(
 
     root_pos = root_pos.reshape(1, -1, 3)
     dof_pos = dof_pos.reshape(1, -1, dof_pos.shape[-1])
+
+    # Filter motion's 29 DOF → 23 DOF for unitree_g1_23dof
+    # Drop: waist_roll(13), waist_pitch(14), L wrist_pitch(20), L wrist_yaw(21),
+    #       R wrist_pitch(27), R wrist_yaw(28)
+    if robot_type == "unitree_g1_23dof" and dof_pos.shape[-1] == 29:
+        keep_idx = list(range(0, 13)) + list(range(15, 20)) + list(range(22, 27))
+        dof_pos = dof_pos[..., keep_idx]
     
     # mimic_obs_buf = torch.cat((
     #             root_pos,
@@ -229,7 +236,7 @@ def main(args, xml_file, robot_base):
                 # root_rot = root_rot[[1,2,3,0]]
                 root_rot = root_rot[[3,0,1,2]]
                 sim_data.qpos[3:7] = root_rot
-                sim_data.qpos[7:] = dof_pos
+                sim_data.qpos[7:7 + dof_pos.shape[-1]] = dof_pos
                 mujoco.mj_forward(sim_model, sim_data)
                 robot_base_pos = sim_data.xpos[sim_model.body(robot_base).id]
                 viewer.cam.lookat = robot_base_pos
@@ -282,7 +289,7 @@ if __name__ == "__main__":
     parser.add_argument("--motion_file", help="Path to your *.pkl motion file for MotionLib", 
                         default="../motion_data/OMOMO_g1_GMR/sub1_clothesstand_067.pkl"
                         )
-    parser.add_argument("--robot", type=str, default="unitree_g1_with_hands", choices=["unitree_g1", "unitree_g1_with_hands"])
+    parser.add_argument("--robot", type=str, default="unitree_g1_23dof", choices=["unitree_g1", "unitree_g1_with_hands", "unitree_g1_23dof"])
     parser.add_argument("--steps", type=str,
                         # default="1,3,5,10,15,20,30,40,50",
                         default="1",
@@ -304,6 +311,9 @@ if __name__ == "__main__":
     
     if args.robot == "unitree_g1" or args.robot == "unitree_g1_with_hands":
         xml_file = f"{HERE}/../assets/g1/g1_mocap_29dof.xml"
+        robot_base = "pelvis"
+    elif args.robot == "unitree_g1_23dof":
+        xml_file = f"{HERE}/../assets/g1/g1_23dof.xml"
         robot_base = "pelvis"
     else:
         raise ValueError(f"robot type {args.robot} not supported")

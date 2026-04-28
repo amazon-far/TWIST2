@@ -2,7 +2,7 @@
 
 script_dir=$(dirname $(realpath $0))
 # motion_file="${script_dir}/assets/example_motions/0807_yanjie_walk_005.pkl"
-motion_file="${script_dir}/assets/example_motions/0807_yanjie_walk_001.pkl"
+motion_file="${script_dir}/assets/example_motions/0807_yanjie_walk_008.pkl"
 
 
 # Change to deploy_real directory
@@ -17,7 +17,8 @@ redis_ip="localhost"
 # Run the motion server
 python server_motion_lib.py \
     --motion_file ${motion_file} \
-    --robot unitree_g1_with_hands \
+#    --robot unitree_g1 \
+    --robot unitree_g1_23dof \
     --vis \
     --redis_ip ${redis_ip}
     # --send_start_frame_as_end_frame \

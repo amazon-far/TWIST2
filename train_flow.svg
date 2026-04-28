@@ -1,0 +1,187 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1400 1900" font-family="Arial, sans-serif" font-size="13">
+  <defs>
+    <marker id="arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+      <path d="M0,0 L10,5 L0,10 z" fill="#333"/>
+    </marker>
+    <marker id="arrow-blue" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+      <path d="M0,0 L10,5 L0,10 z" fill="#1565c0"/>
+    </marker>
+    <marker id="arrow-green" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+      <path d="M0,0 L10,5 L0,10 z" fill="#2e7d32"/>
+    </marker>
+  </defs>
+
+  <text x="700" y="28" text-anchor="middle" font-size="22" font-weight="bold">bash train.sh 진입점 &amp; Teacher/Student 학습 흐름</text>
+  <text x="700" y="52" text-anchor="middle" font-size="13" fill="#555">TWIST2 · g1_stu_future (DAgger + PPO) · Isaac Gym</text>
+
+  <rect x="480" y="75" width="440" height="80" rx="8" fill="#fff3e0" stroke="#e65100" stroke-width="2"/>
+  <text x="700" y="97" text-anchor="middle" font-weight="bold" fill="#e65100">(1) bash train.sh &lt;exptid&gt; &lt;device&gt;</text>
+  <text x="700" y="117" text-anchor="middle" font-size="12">cd legged_gym/legged_gym/scripts</text>
+  <text x="700" y="134" text-anchor="middle" font-size="12">task="g1_stu_future" · proj="g1_stu_future" · teacher_exptid="None"</text>
+  <text x="700" y="149" text-anchor="middle" font-size="11" fill="#555">train.sh:8~23</text>
+
+  <line x1="700" y1="155" x2="700" y2="180" stroke="#333" stroke-width="2" marker-end="url(#arrow)"/>
+
+  <rect x="420" y="180" width="560" height="120" rx="8" fill="#e3f2fd" stroke="#1565c0" stroke-width="2"/>
+  <text x="700" y="202" text-anchor="middle" font-weight="bold" fill="#1565c0">(2) python train.py  (legged_gym/scripts/train.py:41)</text>
+  <text x="700" y="224" text-anchor="middle" font-size="12">• args.headless = True,  wandb.init(project="twist")</text>
+  <text x="700" y="242" text-anchor="middle" font-size="12">• log_pth = logs/&lt;proj_name&gt;/&lt;exptid&gt;</text>
+  <text x="700" y="260" text-anchor="middle" font-size="12">• env, _ = task_registry.make_env(name="g1_stu_future", args)</text>
+  <text x="700" y="278" text-anchor="middle" font-size="12">• ppo_runner, _ = task_registry.make_alg_runner(log_root=log_pth, env, name, args)</text>
+  <text x="700" y="294" text-anchor="middle" font-size="12" font-weight="bold">• ppo_runner.learn(max_iterations=30_001, init_at_random_ep_len=True)</text>
+
+  <line x1="700" y1="300" x2="700" y2="330" stroke="#333" stroke-width="2" marker-end="url(#arrow)"/>
+
+  <rect x="60" y="330" width="620" height="170" rx="8" fill="#f3e5f5" stroke="#6a1b9a" stroke-width="2"/>
+  <text x="370" y="352" text-anchor="middle" font-weight="bold" fill="#6a1b9a">(3-a) envs/__init__.py — task registration</text>
+  <text x="370" y="374" text-anchor="middle" font-size="12">task_registry.register("g1_stu_future",</text>
+  <text x="370" y="390" text-anchor="middle" font-size="12">G1MimicFuture,  G1MimicStuFutureCfg(),  G1MimicStuFutureCfgDAgger())</text>
+  <text x="370" y="412" text-anchor="middle" font-size="11" fill="#555">env class: g1/g1_mimic_future.py   cfg: g1/g1_mimic_future_config.py</text>
+  <line x1="100" y1="425" x2="640" y2="425" stroke="#6a1b9a" stroke-width="1"/>
+  <text x="370" y="450" text-anchor="middle" font-size="12" font-weight="bold">CfgDAgger.runner 핵심 필드</text>
+  <text x="370" y="468" text-anchor="middle" font-size="11">policy_class_name = "ActorCriticFuture"</text>
+  <text x="370" y="484" text-anchor="middle" font-size="11">algorithm_class_name = "DaggerPPO"  ·  runner_class_name = "OnPolicyDaggerRunner"</text>
+
+  <rect x="720" y="330" width="620" height="170" rx="8" fill="#e8f5e9" stroke="#2e7d32" stroke-width="2"/>
+  <text x="1030" y="352" text-anchor="middle" font-weight="bold" fill="#2e7d32">(3-b) Teacher 참조 설정  (CfgDAgger.teachercfg)</text>
+  <text x="1030" y="374" text-anchor="middle" font-size="12">class teachercfg(G1MimicPrivCfgPPO): pass</text>
+  <text x="1030" y="394" text-anchor="middle" font-size="12">teacher_proj_name  = "g1_priv_mimic"</text>
+  <text x="1030" y="410" text-anchor="middle" font-size="12">teacher_experiment_name = &lt;args.teacher_exptid&gt;  (기본 "None")</text>
+  <text x="1030" y="426" text-anchor="middle" font-size="12">teacher_checkpoint = -1  (-1 = 최신 ckpt)</text>
+  <text x="1030" y="450" text-anchor="middle" font-size="11" fill="#555">Teacher 정책 = G1MimicPrivCfgPPO.runner.policy_class_name</text>
+  <text x="1030" y="466" text-anchor="middle" font-size="11" fill="#555">(privileged obs 기반 full-state actor)</text>
+  <text x="1030" y="486" text-anchor="middle" font-size="11" fill="#c62828">train.sh 현재값 teacher_exptid="None" → KL 증류 비활성 (PPO-only)</text>
+
+  <line x1="370" y1="500" x2="370" y2="540" stroke="#6a1b9a" stroke-width="2" marker-end="url(#arrow)"/>
+  <line x1="1030" y1="500" x2="1030" y2="540" stroke="#2e7d32" stroke-width="2" marker-end="url(#arrow-green)"/>
+
+  <rect x="60" y="540" width="620" height="160" rx="8" fill="#fce4ec" stroke="#ad1457" stroke-width="2"/>
+  <text x="370" y="562" text-anchor="middle" font-weight="bold" fill="#ad1457">(4) make_env → G1MimicFuture(env) 인스턴스화</text>
+  <text x="370" y="584" text-anchor="middle" font-size="12">gym_utils/task_registry.py:66</text>
+  <text x="370" y="604" text-anchor="middle" font-size="12">• set_seed, parse_sim_params → Isaac Gym sim 생성</text>
+  <text x="370" y="620" text-anchor="middle" font-size="12">• 모션 로드: motion_data_configs/twist2_dataset.yaml</text>
+  <text x="370" y="636" text-anchor="middle" font-size="12">• obs: student_future,  critic: privileged obs</text>
+  <text x="370" y="652" text-anchor="middle" font-size="12">• num_obs = (n_proprio+n_mimic)*(history+1) + n_future_obs</text>
+  <text x="370" y="668" text-anchor="middle" font-size="12">• reward: tracking_joint_dof/vel, keybody_pos, root_rot ...</text>
+  <text x="370" y="688" text-anchor="middle" font-size="11" fill="#555">env.num_obs (student),  env.num_privileged_obs (teacher 입력)</text>
+
+  <rect x="720" y="540" width="620" height="160" rx="8" fill="#e1f5fe" stroke="#01579b" stroke-width="2"/>
+  <text x="1030" y="562" text-anchor="middle" font-weight="bold" fill="#01579b">(5) make_alg_runner → OnPolicyDaggerRunner</text>
+  <text x="1030" y="584" text-anchor="middle" font-size="12">gym_utils/task_registry.py:105</text>
+  <text x="1030" y="604" text-anchor="middle" font-size="12">• runner_class = eval("OnPolicyDaggerRunner")</text>
+  <text x="1030" y="620" text-anchor="middle" font-size="12">• runner = runner_class(env, train_cfg_dict, log_dir, device)</text>
+  <text x="1030" y="636" text-anchor="middle" font-size="12">• resume 분기: --resumeid → runner.load(resume_path)</text>
+  <text x="1030" y="656" text-anchor="middle" font-size="11" fill="#555">train_cfg_dict는 policy/algorithm/runner/teachercfg 포함</text>
+  <text x="1030" y="678" text-anchor="middle" font-size="11" fill="#555">→ 생성자에서 Teacher/Student/DaggerPPO 모두 초기화</text>
+
+  <line x1="370" y1="700" x2="500" y2="740" stroke="#ad1457" stroke-width="2" marker-end="url(#arrow)"/>
+  <line x1="1030" y1="700" x2="900" y2="740" stroke="#01579b" stroke-width="2" marker-end="url(#arrow)"/>
+
+  <rect x="60" y="740" width="1280" height="230" rx="8" fill="#fff8e1" stroke="#ef6c00" stroke-width="2"/>
+  <text x="700" y="762" text-anchor="middle" font-weight="bold" fill="#ef6c00">(6) OnPolicyDaggerRunner.__init__  (rsl_rl/runners/on_policy_dagger_runner.py:72)</text>
+
+  <rect x="90" y="780" width="600" height="170" rx="6" fill="#ffecb3" stroke="#bf360c" stroke-width="1.5"/>
+  <text x="390" y="800" text-anchor="middle" font-weight="bold" fill="#bf360c">Teacher (privileged)</text>
+  <text x="390" y="820" text-anchor="middle" font-size="12">teacher_policy_class = eval(teacher_cfg.policy_class_name)</text>
+  <text x="390" y="836" text-anchor="middle" font-size="12">self.teacher_actor_critic = teacher_policy_class(</text>
+  <text x="390" y="852" text-anchor="middle" font-size="12">    num_observations = env.num_privileged_obs, ...,</text>
+  <text x="390" y="868" text-anchor="middle" font-size="12">    num_motion_observations = n_priv_mimic_obs)</text>
+  <text x="390" y="890" text-anchor="middle" font-size="12" fill="#bf360c" font-weight="bold">Teacher 가중치 로드 (line 110~116)</text>
+  <text x="390" y="908" text-anchor="middle" font-size="11">if teacher_experiment_name not in {"None","dummy",None}:</text>
+  <text x="390" y="924" text-anchor="middle" font-size="11">  load_teacher(get_policy_path(teacher_proj_name, exptid, ckpt))</text>
+  <text x="390" y="940" text-anchor="middle" font-size="11">  self.teacher_loaded = True → DaggerPPO KL 손실 ON</text>
+
+  <rect x="710" y="780" width="600" height="170" rx="6" fill="#c8e6c9" stroke="#1b5e20" stroke-width="1.5"/>
+  <text x="1010" y="800" text-anchor="middle" font-weight="bold" fill="#1b5e20">Student (proprioceptive + future)</text>
+  <text x="1010" y="820" text-anchor="middle" font-size="12">policy_class = eval("ActorCriticFuture")</text>
+  <text x="1010" y="836" text-anchor="middle" font-size="12">actor_critic = policy_class(</text>
+  <text x="1010" y="852" text-anchor="middle" font-size="12">  num_observations = env.num_obs, critic = num_priv_obs,</text>
+  <text x="1010" y="868" text-anchor="middle" font-size="12">  n_mimic_obs, tar_motion_steps, n_proprio, history_len ...)</text>
+  <text x="1010" y="890" text-anchor="middle" font-size="12" fill="#1b5e20" font-weight="bold">self.alg = DaggerPPO(env, actor_critic, teacher_ac,</text>
+  <text x="1010" y="906" text-anchor="middle" font-size="12" fill="#1b5e20" font-weight="bold">  teacher_loaded=teacher_loaded, **alg_cfg)</text>
+  <text x="1010" y="924" text-anchor="middle" font-size="11">self.alg.init_storage(num_envs, num_steps_per_env, ...)</text>
+  <text x="1010" y="940" text-anchor="middle" font-size="11">Normalizer 생성 (obs / critic / teacher 각각)</text>
+
+  <line x1="700" y1="970" x2="700" y2="1000" stroke="#333" stroke-width="2" marker-end="url(#arrow)"/>
+
+  <rect x="60" y="1000" width="1280" height="560" rx="8" fill="#f5f5f5" stroke="#333" stroke-width="2"/>
+  <text x="700" y="1022" text-anchor="middle" font-weight="bold">(7) runner.learn_RL(num_learning_iterations) — DAgger+PPO main loop  (line 196)</text>
+
+  <rect x="100" y="1040" width="1200" height="50" rx="6" fill="#eceff1" stroke="#37474f"/>
+  <text x="700" y="1060" text-anchor="middle" font-size="12">obs, critic_obs = env.get_observations(), env.get_privileged_observations()</text>
+  <text x="700" y="1078" text-anchor="middle" font-size="12">normalizer.normalize(obs), teacher_normalizer.normalize(critic_obs), actor_critic.train()</text>
+
+  <line x1="700" y1="1090" x2="700" y2="1110" stroke="#333" stroke-width="2" marker-end="url(#arrow)"/>
+
+  <rect x="100" y="1110" width="1200" height="30" rx="4" fill="#cfd8dc" stroke="#37474f"/>
+  <text x="700" y="1130" text-anchor="middle" font-weight="bold" font-size="13">for it in range(..., tot_iter):   hist_encoding = (it % dagger_update_freq == 0)</text>
+
+  <rect x="100" y="1150" width="580" height="220" rx="6" fill="#e3f2fd" stroke="#1565c0" stroke-width="1.5"/>
+  <text x="390" y="1172" text-anchor="middle" font-weight="bold" fill="#1565c0">(7-A) Rollout (num_steps_per_env)</text>
+  <text x="390" y="1194" text-anchor="middle" font-size="12">with torch.inference_mode():</text>
+  <text x="390" y="1212" text-anchor="middle" font-size="12">for i in range(num_steps_per_env):</text>
+  <text x="390" y="1230" text-anchor="middle" font-size="12" font-weight="bold">actions = alg.act(obs, critic_obs, infos, hist_encoding)</text>
+  <text x="390" y="1246" text-anchor="middle" font-size="11" fill="#555">  → student actor_critic.act(obs) (stochastic, log_prob 저장)</text>
+  <text x="390" y="1262" text-anchor="middle" font-size="11" fill="#555">  → critic.evaluate(critic_obs) 저장</text>
+  <text x="390" y="1282" text-anchor="middle" font-size="12">obs, priv_obs, rewards, dones, infos = env.step(actions)</text>
+  <text x="390" y="1300" text-anchor="middle" font-size="12">obs / critic_obs 정규화 + normalizer.record</text>
+  <text x="390" y="1318" text-anchor="middle" font-size="12">alg.process_env_step(rewards, dones, infos)</text>
+  <text x="390" y="1334" text-anchor="middle" font-size="11" fill="#555">  → storage.add_transitions (obs, critic_obs, act, logp, v, ...)</text>
+  <text x="390" y="1354" text-anchor="middle" font-size="11">alg.compute_returns(critic_obs)   # GAE</text>
+
+  <rect x="720" y="1150" width="580" height="220" rx="6" fill="#fff3e0" stroke="#ef6c00" stroke-width="1.5"/>
+  <text x="1010" y="1172" text-anchor="middle" font-weight="bold" fill="#ef6c00">(7-B) Update — DaggerPPO.update()  (dagger_ppo.py:168)</text>
+  <text x="1010" y="1194" text-anchor="middle" font-size="12">for sample in storage.mini_batch_generator(...):</text>
+  <text x="1010" y="1212" text-anchor="middle" font-size="12">  student: actor_critic.act(obs_batch) → mu_s, sigma_s, logp_s</text>
+  <text x="1010" y="1228" text-anchor="middle" font-size="12">  value_batch = actor_critic.evaluate(critic_obs_batch)</text>
+  <text x="1010" y="1248" text-anchor="middle" font-size="12" font-weight="bold">1. PPO surrogate + clipped value loss + entropy</text>
+  <text x="1010" y="1268" text-anchor="middle" font-size="12" fill="#c62828" font-weight="bold">2. if dagger_coef &gt; 0 and teacher_loaded:</text>
+  <text x="1010" y="1284" text-anchor="middle" font-size="11">   teacher_actor_critic.act(critic_obs_batch)  (no_grad)</text>
+  <text x="1010" y="1300" text-anchor="middle" font-size="11">   KL(mu_s,sigma_s || mu_t,sigma_t) * dagger_coef → loss에 합산</text>
+  <text x="1010" y="1318" text-anchor="middle" font-size="12">loss.backward() → clip_grad_norm → optimizer.step()</text>
+  <text x="1010" y="1338" text-anchor="middle" font-size="11">dagger_coef 코사인 감쇠 (anneal_steps=60000, min=0.1)</text>
+  <text x="1010" y="1354" text-anchor="middle" font-size="11">std 스케줄: action_std = sigma_schedule(counter)</text>
+
+  <line x1="390" y1="1370" x2="390" y2="1400" stroke="#1565c0" stroke-width="2" marker-end="url(#arrow-blue)"/>
+  <line x1="1010" y1="1370" x2="1010" y2="1400" stroke="#ef6c00" stroke-width="2" marker-end="url(#arrow)"/>
+
+  <rect x="100" y="1400" width="1200" height="60" rx="6" fill="#ede7f6" stroke="#4527a0"/>
+  <text x="700" y="1422" text-anchor="middle" font-weight="bold">(7-C) 로그 &amp; 체크포인트</text>
+  <text x="700" y="1442" text-anchor="middle" font-size="12">self.log(locals()) → wandb.log  ·  주기적 save: model_&lt;it&gt;.pt (2500↓ 매 500, ≤10000 매 1000, 이후 매 2500)</text>
+
+  <line x1="700" y1="1460" x2="700" y2="1485" stroke="#333" stroke-width="2" marker-end="url(#arrow)"/>
+
+  <rect x="420" y="1485" width="560" height="60" rx="6" fill="#ffebee" stroke="#c62828"/>
+  <text x="700" y="1505" text-anchor="middle" font-weight="bold" fill="#c62828">loop end: it == max_iterations (30001)</text>
+  <text x="700" y="1525" text-anchor="middle" font-size="12">self.save("model_{current_learning_iteration}.pt") → 최종 저장 후 종료</text>
+
+  <rect x="60" y="1580" width="1280" height="290" rx="8" fill="#f1f8e9" stroke="#558b2f" stroke-width="2"/>
+  <text x="700" y="1602" text-anchor="middle" font-weight="bold" fill="#33691e">Teacher 학습 ↔ Student 학습 관계 요약</text>
+
+  <rect x="90" y="1620" width="600" height="230" rx="6" fill="#fff3e0" stroke="#e65100"/>
+  <text x="390" y="1642" text-anchor="middle" font-weight="bold" fill="#e65100">Teacher 학습 (별도 사전 단계)</text>
+  <text x="390" y="1664" text-anchor="middle" font-size="12">task = "g1_priv_mimic"  →  G1MimicDistill + G1MimicPrivCfg</text>
+  <text x="390" y="1682" text-anchor="middle" font-size="12">runner = OnPolicyRunnerMimic,  algorithm = PPO</text>
+  <text x="390" y="1700" text-anchor="middle" font-size="12">입력: privileged obs (전지적 상태) + 모션 타깃</text>
+  <text x="390" y="1718" text-anchor="middle" font-size="12">출력: mu_t, sigma_t (액션 분포) · critic value</text>
+  <text x="390" y="1738" text-anchor="middle" font-size="12" fill="#555">로그 위치: logs/g1_priv_mimic/&lt;teacher_exptid&gt;/model_*.pt</text>
+  <text x="390" y="1760" text-anchor="middle" font-size="12" fill="#c62828" font-weight="bold">→ train.sh에서는 실행하지 않음. 먼저 따로 학습한 뒤</text>
+  <text x="390" y="1778" text-anchor="middle" font-size="12" fill="#c62828" font-weight="bold">  train.sh의 teacher_exptid 인자로 ckpt id 전달해야 함</text>
+  <text x="390" y="1800" text-anchor="middle" font-size="11">현재 train.sh: teacher_exptid="None" → KL distill OFF</text>
+  <text x="390" y="1818" text-anchor="middle" font-size="11">(student 순수 PPO, teacher_actor_critic은 사용되지 않음)</text>
+  <text x="390" y="1838" text-anchor="middle" font-size="11" fill="#555">distill ON이 필요하면 "None" 자리에 priv policy exptid 입력</text>
+
+  <rect x="710" y="1620" width="600" height="230" rx="6" fill="#e8f5e9" stroke="#2e7d32"/>
+  <text x="1010" y="1642" text-anchor="middle" font-weight="bold" fill="#2e7d32">Student 학습 (bash train.sh 본체)</text>
+  <text x="1010" y="1664" text-anchor="middle" font-size="12">task = "g1_stu_future"  →  G1MimicFuture + CfgDAgger</text>
+  <text x="1010" y="1682" text-anchor="middle" font-size="12">runner = OnPolicyDaggerRunner,  algorithm = DaggerPPO</text>
+  <text x="1010" y="1700" text-anchor="middle" font-size="12">입력: proprio history + mimic obs + future motion frames</text>
+  <text x="1010" y="1718" text-anchor="middle" font-size="12">정책: ActorCriticFuture (future encoder + MoE head)</text>
+  <text x="1010" y="1740" text-anchor="middle" font-size="12" font-weight="bold" fill="#2e7d32">Loss = PPO(surrogate+value+entropy) + alpha·KL(pi_s || pi_t)</text>
+  <text x="1010" y="1758" text-anchor="middle" font-size="11">    alpha = dagger_coef,  cosine-anneal 0.2 → 0.1 (60k)</text>
+  <text x="1010" y="1778" text-anchor="middle" font-size="11">teacher_loaded=False 이면 KL항 0 → 순수 RL</text>
+  <text x="1010" y="1798" text-anchor="middle" font-size="11" fill="#555">체크포인트: logs/g1_stu_future/&lt;exptid&gt;/model_&lt;it&gt;.pt</text>
+  <text x="1010" y="1818" text-anchor="middle" font-size="11" fill="#555">이 ckpt가 sim2sim / sim2real 배포에 사용됨</text>
+  <text x="1010" y="1838" text-anchor="middle" font-size="11">(deploy_real/server_motion_lib.py 등이 로드)</text>
+</svg>
